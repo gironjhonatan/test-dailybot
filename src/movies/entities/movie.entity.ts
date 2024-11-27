@@ -1,6 +1,6 @@
 export class Movie {
-    title: string = ''; // Inicialización con un valor por defecto
-    year: number = 0;   // Otro ejemplo de inicialización
+    title: string = ''; 
+    year: number = 0;  
     genres: string[] = [];
     duration: number = 0;
     imdbRating: number = 0;

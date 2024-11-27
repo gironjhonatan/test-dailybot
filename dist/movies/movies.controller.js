@@ -16,14 +16,10 @@ exports.MoviesController = void 0;
 const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const movies_service_1 = require("./movies.service");
-const create_movie_dto_1 = require("./dto/create-movie.dto");
 const movie_entity_1 = require("./entities/movie.entity");
 let MoviesController = class MoviesController {
     constructor(moviesService) {
         this.moviesService = moviesService;
-    }
-    addMovie(createMovieDto) {
-        return this.moviesService.addMovie(createMovieDto);
     }
     getMovies() {
         return this.moviesService.getAllMovies();
@@ -43,18 +39,15 @@ let MoviesController = class MoviesController {
     getMoviesByActor(actor) {
         return this.moviesService.getMoviesByActor(actor);
     }
+    getMoviesSimilarTo(title) {
+        const movie = this.moviesService.getAllMovies().find(m => m.title === title);
+        if (!movie) {
+            throw new Error('Movie not found');
+        }
+        return this.moviesService.getMoviesSimilarTo(movie);
+    }
 };
 exports.MoviesController = MoviesController;
-__decorate([
-    (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Add a new movie' }),
-    (0, swagger_1.ApiResponse)({ status: 201, description: 'The movie has been successfully created.', type: movie_entity_1.Movie }),
-    (0, swagger_1.ApiResponse)({ status: 400, description: 'Bad request.' }),
-    __param(0, (0, common_1.Body)()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [create_movie_dto_1.CreateMovieDto]),
-    __metadata("design:returntype", movie_entity_1.Movie)
-], MoviesController.prototype, "addMovie", null);
 __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'Get all movies' }),
@@ -107,6 +100,15 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", Array)
 ], MoviesController.prototype, "getMoviesByActor", null);
+__decorate([
+    (0, common_1.Get)('similar'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get movies similar to a specific movie' }),
+    (0, swagger_1.ApiResponse)({ status: 200, description: 'List of movies similar to the given movie.', type: [movie_entity_1.Movie] }),
+    __param(0, (0, common_1.Query)('title')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Array)
+], MoviesController.prototype, "getMoviesSimilarTo", null);
 exports.MoviesController = MoviesController = __decorate([
     (0, swagger_1.ApiTags)('movies'),
     (0, common_1.Controller)('movies'),

@@ -1,21 +1,12 @@
 import { Controller, Get, Post, Body, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MoviesService } from './movies.service';
-import { CreateMovieDto } from './dto/create-movie.dto';
 import { Movie } from './entities/movie.entity';
 
 @ApiTags('movies')
 @Controller('movies')
 export class MoviesController {
   constructor(private readonly moviesService: MoviesService) {}
-
-  @Post()
-  @ApiOperation({ summary: 'Add a new movie' })
-  @ApiResponse({ status: 201, description: 'The movie has been successfully created.', type: Movie })
-  @ApiResponse({ status: 400, description: 'Bad request.' })
-  addMovie(@Body() createMovieDto: CreateMovieDto): Movie {
-    return this.moviesService.addMovie(createMovieDto);
-  }
 
   @Get()
   @ApiOperation({ summary: 'Get all movies' })
@@ -57,5 +48,16 @@ export class MoviesController {
   @ApiResponse({ status: 200, description: 'List of movies featuring a specific actor.', type: [Movie] })
   getMoviesByActor(@Query('actor') actor: string): Movie[] {
     return this.moviesService.getMoviesByActor(actor);
+  }
+
+  @Get('similar')
+  @ApiOperation({ summary: 'Get movies similar to a specific movie' })
+  @ApiResponse({ status: 200, description: 'List of movies similar to the given movie.', type: [Movie] })
+  getMoviesSimilarTo(@Query('title') title: string): Movie[] {
+    const movie = this.moviesService.getAllMovies().find(m => m.title === title);
+    if (!movie) {
+      throw new Error('Movie not found');
+    }
+    return this.moviesService.getMoviesSimilarTo(movie);
   }
 }
